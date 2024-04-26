@@ -1,15 +1,7 @@
 import psycopg2
-import text_message
-
-# conn = psycopg2.connect(database='investor', user='postgres',
-#                         password='postgres', host='172.17.0.5', port=5432)
-
 
 conn = psycopg2.connect(database='homework', user='postgres',
                         password='postgres', host='192.168.1.50', port=54320)
-
-
-# docker build -f Dockerfile -t get-hw-bot .
 
 
 def get_subjects():

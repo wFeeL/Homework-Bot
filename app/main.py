@@ -13,13 +13,13 @@ from telebot import types
 from telegram_bot_calendar import DetailedTelegramCalendar
 
 telegram_calendar.reformatTelegramCalendar()
-bot = telebot.TeleBot('6360506500:AAE6NdNI59KoYy5pt01jUJ73bU4VPPMh3tY')  # API Token
+bot = telebot.TeleBot('7187699848:AAEzEQtUPYhfUXc_y1spOJCTr7VfT-Umllw')  # API Token
 weather_API = 'fc99a79328de8b7fa62cec28ebbb5a00'
 
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
 
-def checkPermission(message):
+def check_permission(message):
     users = database.get_users()
     if str(message.from_user.id) in users:
         return True
@@ -50,7 +50,7 @@ def send_message_to_all(message):
 
 @bot.message_handler(commands=['menu'])
 def homework_menu(message, callback=False):
-    if checkPermission(message):
+    if check_permission(message):
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(types.InlineKeyboardButton('✍ Задания на завтра', callback_data='homework_tomorrow'),
                    types.InlineKeyboardButton('📅 Календарь заданий', callback_data='homework_calendar'),
@@ -64,7 +64,7 @@ def homework_menu(message, callback=False):
 
 @bot.message_handler(commands=['tomorrow'])
 def homework_tomorrow(message, callback=False):
-    if checkPermission(message):
+    if check_permission(message):
         tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
         next_date = datetime.datetime.strftime(tomorrow_date + datetime.timedelta(days=1), '%Y-%m-%d')
         previous_date = datetime.datetime.strftime(tomorrow_date - datetime.timedelta(days=1), '%Y-%m-%d')
@@ -104,7 +104,7 @@ def homework_tomorrow(message, callback=False):
 
 @bot.message_handler(commands=['calendar'])
 def homework_calendar(message, callback=False):
-    if checkPermission(message):
+    if check_permission(message):
         calendar, step = DetailedTelegramCalendar(min_date=datetime.date(year=2023, month=9, day=1),
                                                   max_date=datetime.date(year=2024, month=5, day=29)).build()
         if callback:
@@ -116,7 +116,7 @@ def homework_calendar(message, callback=False):
 
 @bot.message_handler(commands=['homework'])
 def homework_all(message, callback=False):
-    if checkPermission(message):
+    if check_permission(message):
         subjects = database.get_subjects()
         markup = types.InlineKeyboardMarkup(row_width=2)
         for i in range(len(subjects)):
@@ -188,7 +188,7 @@ def homework_all_pagination(call):
 
 @bot.message_handler(commands=['schedule'])
 def timetable_menu(message, callback=False):
-    if checkPermission(message):
+    if check_permission(message):
         weekend = database.get_weekend()
 
         markup = types.InlineKeyboardMarkup(row_width=1)
@@ -235,7 +235,7 @@ def timetable_day(call):
 
 @bot.message_handler(commands=['teachers'])
 def show_teachers(message):
-    if checkPermission(message):
+    if check_permission(message):
         teachers = database.get_teachers()
         result = text_message.TEACHERS
         for i in range(len(teachers)):
@@ -248,7 +248,7 @@ def show_teachers(message):
 
 @bot.message_handler(commands=['site'])
 def site(message):
-    if checkPermission(message):
+    if check_permission(message):
         markup = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton('Перейти по ссылке',
                                                                              url='https://petersburgedu.ru/'))
         bot.send_message(text=text_message.SITE, chat_id=message.chat.id, parse_mode='HTML', reply_markup=markup)
@@ -261,7 +261,7 @@ def donate(message):
 
 @bot.message_handler(commands=['weather'])
 def get_weather(message):
-    if checkPermission(message):
+    if check_permission(message):
         request = requests.get(
             url=f'https://api.openweathermap.org/data/2.5/weather?q=Saint%20Petersburg&appid={weather_API}&units=metric')
         if request.status_code == 200:
@@ -299,7 +299,7 @@ def get_weather(message):
 
 @bot.message_handler(commands=['timetable'])
 def get_schedule(message):
-    if checkPermission(message):
+    if check_permission(message):
         result = text_message.TIMETABLE
         data = database.get_timetable()
         for i in range(len(data)):
@@ -427,6 +427,7 @@ class Message:
 
 if __name__ == '__main__':
     try:
+        print('Start polling')
         bot.polling(none_stop=True)
 
     except Exception as err:
