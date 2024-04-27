@@ -15,13 +15,13 @@ from telegram_bot_calendar import DetailedTelegramCalendar
 telegram_calendar.reformatTelegramCalendar()
 bot = telebot.TeleBot('7187699848:AAEzEQtUPYhfUXc_y1spOJCTr7VfT-Umllw')  # API Token
 weather_API = 'fc99a79328de8b7fa62cec28ebbb5a00'
-
+admin_id = '416966184'  # Admin Telegram id
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
 
 def check_permission(message):
     users = database.get_users()
-    if str(message.from_user.id) in users:
+    if message.from_user.id in users:
         return True
     bot.send_message(message.chat.id, text=text_message.FALSE_PERMISSION, parse_mode='HTML')
     return False
@@ -41,7 +41,7 @@ def support(message):
 
 @bot.message_handler(commands=['bot_message'])
 def send_message_to_all(message):
-    if str(message.from_user.id) == '416966184':
+    if str(message.from_user.id) == admin_id:
         msg = bot.send_message(chat_id=message.chat.id, text=text_message.MESSAGE_TO_SEND)
         bot.register_next_step_handler(msg, message_to_send_status)
     else:
@@ -68,6 +68,7 @@ def homework_tomorrow(message, callback=False):
         tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
         next_date = datetime.datetime.strftime(tomorrow_date + datetime.timedelta(days=1), '%Y-%m-%d')
         previous_date = datetime.datetime.strftime(tomorrow_date - datetime.timedelta(days=1), '%Y-%m-%d')
+        tomorrow_date = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(days=1), '%Y-%m-%d')
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.row(types.InlineKeyboardButton('🔄 Главное меню', callback_data='menu'))
@@ -182,7 +183,7 @@ def homework_all_pagination(call):
     markup.row(menu_button)
     bot.edit_message_text(
         text=f'Предмет: {subject_sticker} <b>{str(data[page - 1][1])}</b>'
-             f'\n\nДата: <i>{data[page - 1][2].strftime("%A, %d.%m.%Y")}</i>\n\nДомашнее задание: {data[page - 1][3]}',
+             f'\n\nДата: <i>{data[page - 1][2]}</i>\n\nДомашнее задание: {data[page - 1][3]}',
         parse_mode="HTML", reply_markup=markup, chat_id=call.message.chat.id, message_id=call.message.message_id)
 
 
@@ -331,6 +332,7 @@ def random_text(message):
 @bot.callback_query_handler(func=lambda call: 'date' in call.data)
 def calendar_date(call):
     json_str = json.loads(call.data)['date']
+    print(f'here is json_str {json_str} and its type {type(json_str)}')
     get_homework_calendar(call, json_str)
 
 
@@ -386,7 +388,6 @@ def callback_query(call):
 
 def get_homework_calendar(call, result):
     markup = types.InlineKeyboardMarkup(row_width=3)
-
     date = datetime.datetime.strptime(result, '%Y-%m-%d')
 
     next_date = datetime.datetime.strftime(date + datetime.timedelta(days=1), '%Y-%m-%d')
@@ -399,7 +400,7 @@ def get_homework_calendar(call, result):
         types.InlineKeyboardButton(text='Вперед ▶',
                                    callback_data="{\"date\":\"" + f"{next_date}" + "\"}"))
 
-    homework_data = database.get_homework_by_date(date)
+    homework_data = database.get_homework_by_date(result)
     homework_text = ''
 
     if len(homework_data) > 0:
