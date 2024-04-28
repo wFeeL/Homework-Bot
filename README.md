@@ -1,4 +1,4 @@
-#Homework Bot
+# Homework Bot
 Данный проект включает в себя два бота, которые помогут обычным пользователям получать, добавлять и редактировать домашние задания.
 
 ## getHWbot
@@ -43,7 +43,7 @@ putHWbot написан на библиотеке pyTelegramBotAPI - https://pyp
 
 ## Установка и запуск проекта
 1. Установка всех библиотек - `pip install -r \путь\к\папке\requirements.txt`.
-2. Указание API Token вашего бота в getHWbot/putHWbot в переменные bot (комментарий - API_Token).
+2. Указание API Token вашего бота в getHWbot/putHWbot в переменные bot (комментарий - #API_Token).
 3. Смена администратора/создателя бота - в getHWbot/putHWbot переменные admin_id.
 
 ## Разработчики:
