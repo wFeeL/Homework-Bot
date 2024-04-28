@@ -1,6 +1,6 @@
 import sqlite3
 
-con = sqlite3.connect('../../database/homework_bot_database.sqlite', check_same_thread=False)
+con = sqlite3.connect('../database/homework_bot_database.sqlite', check_same_thread=False)
 cur = con.cursor()
 
 
